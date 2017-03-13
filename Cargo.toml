@@ -3,7 +3,9 @@ name = "piston-fractal-tree"
 version = "1.0.0"
 
 [dependencies]
-piston_window = "0.64.*"
+piston_window = "0.64"
+nalgebra = "0.11"
+rand = "0.3"
 
 [[bin]]
 name = "piston-fractal-tree"

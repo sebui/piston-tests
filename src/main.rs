@@ -1,6 +1,10 @@
 extern crate piston_window;
+extern crate rand;
+extern crate nalgebra;
 
 use piston_window::*;
+use nalgebra::{Vector2, Point2,Isometry2};
+use rand::Rng;
 
 const WINDOW_SIZE: [u32; 2] = [1280, 720];
 
@@ -28,42 +32,35 @@ fn main() {
         WINDOW_SIZE[1] as f64 - 200.0
     );
 
+    let mut particles: Vec<(Point2<f64>, Vector2<f64>)> = {
+        let mut rng = rand::thread_rng();
+        (0..100).map(|_| (rng.gen(), rng.gen()) ).collect()
+    };
+
+    let square = rectangle::square(0.0, 0.0, 10.0);
+
     while let Some(event) = window.next() {
         match event {
-            Input::Press(Button::Keyboard(key)) => {
-                match key {
-                    Key::Up if max_branches < 16 => max_branches += 1,
-                    Key::Down if max_branches > 1 => max_branches -= 1,
-                    Key::Left => angle += 0.01,
-                    Key::Right => angle -= 0.01,
-                    _ => {}
+
+            Input::Update(arg) => {
+                for particle in &mut particles {
+                    particle.0 += particle.1;
+                    particle.0 *= Isometry2::new(Vector2::new(arg.dt, arg.dt), ::std::f64::consts::PI);
                 }
-            },
+            }
 
             Input::Render(_) => {
                 window.draw_2d(&event, |c, g| {
                     clear([0.92, 0.94, 0.98, 1.0], g);
 
-                    for branch in branches(c.transform.trans(tree_position.0, tree_position.1), angle, 100.0, max_branches) {
-                        line.radius(branch.1 / 10.0).draw([0.0, 0.0, 0.0, -branch.1], &c.draw_state, branch.0, g);
+                    for particle in &particles {
+                        rectangle([1.0, 0.0, 0.0, 1.0], square, c.transform.trans(particle.0[0], particle.0[1]), g);
                     }
                 });
-            },
+            }
             _ => {}
         }
     }
 }
 
-fn branches(position: math::Matrix2d, angle: f64, depth: f64, max: u8) -> Vec<(math::Matrix2d, f64)> {
-    let mut branch = Vec::new();
-
-    branch.push((position, depth));
-
-    if max > 0 {
-        branch.extend(branches(position.trans(0.0, -depth).rot_rad( angle), angle, depth * 0.8, max - 1));
-        branch.extend(branches(position.trans(0.0, -depth).rot_rad(-angle), angle, depth * 0.8, max - 1));
-    }
-
-    return branch;
-}
 
