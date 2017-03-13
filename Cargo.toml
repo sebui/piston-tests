@@ -1,0 +1,12 @@
+[package]
+name = "piston-fractal-tree"
+version = "1.0.0"
+
+[dependencies]
+piston_window = "0.64.*"
+
+[[bin]]
+name = "piston-fractal-tree"
+test = false
+doc = false
+
