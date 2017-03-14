@@ -34,18 +34,26 @@ fn main() {
 
     let mut particles: Vec<(Point2<f64>, Vector2<f64>)> = {
         let mut rng = rand::thread_rng();
-        (0..100).map(|_| (rng.gen(), rng.gen()) ).collect()
+        (0..10000).map(|_| (
+                Point2::new(
+                    rng.gen_range(0.0, WINDOW_SIZE[0] as f64),
+                    rng.gen_range(0.0, WINDOW_SIZE[1] as f64)
+                ),
+                Vector2::new(
+                    rng.gen_range(-50.0, 50.0),
+                    rng.gen_range(-50.0, 50.0)
+                )
+            )).collect()
     };
 
-    let square = rectangle::square(0.0, 0.0, 10.0);
+    let square = rectangle::square(0.0, 0.0, 4.0);
 
     while let Some(event) = window.next() {
         match event {
 
             Input::Update(arg) => {
                 for particle in &mut particles {
-                    particle.0 += particle.1;
-                    particle.0 *= Isometry2::new(Vector2::new(arg.dt, arg.dt), ::std::f64::consts::PI);
+                    particle.0 += particle.1 * arg.dt;
                 }
             }
 
