@@ -23,7 +23,7 @@ fn main() {
 
     let mut particles: Vec<(Point2<f64>, Vector2<f64>)> = {
         let mut rng = rand::thread_rng();
-        (0..1000).map(|_| (
+        (0..5000).map(|_| (
                 Point2::new(
                     rng.gen_range(0.0, WINDOW_SIZE[0] as f64),
                     rng.gen_range(0.0, WINDOW_SIZE[1] as f64)
@@ -35,14 +35,24 @@ fn main() {
             )).collect()
     };
 
-    let square = rectangle::square(0.0, 0.0, 4.0);
+    let square = rectangle::square(0.0, 0.0, 2.0);
+    let mut cursor_pos = Point2::new(0.0, 0.0);
 
     while let Some(event) = window.next() {
         match event {
+            Input::Move(Motion::MouseCursor(x, y)) => {
+                cursor_pos.x = x;
+                cursor_pos.y = y;
+            }
 
-            Input::Update(arg) => {
+            Input::Update(args) => {
                 for particle in &mut particles {
-                    particle.0 += particle.1 * arg.dt;
+                    particle.0 += particle.1 * args.dt;
+                    particle.1 *= 0.9;
+
+                    if nalgebra::distance(&particle.0, &cursor_pos) < 150.0 {
+                        particle.1 += particle.0 - cursor_pos;
+                    }
 
                     if particle.0.x < 0.0 {
                         particle.0.x == 0.0;
@@ -68,7 +78,7 @@ fn main() {
                     clear([0.92, 0.94, 0.98, 1.0], g);
 
                     for particle in &particles {
-                        rectangle([1.0, 0.0, 0.0, 1.0], square, c.transform.trans(particle.0[0], particle.0[1]), g);
+                        rectangle([0.0, 0.0, 0.0, 0.5], square, c.transform.trans(particle.0.x, particle.0.y), g);
                     }
                 });
             }
