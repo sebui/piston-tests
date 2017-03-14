@@ -23,7 +23,7 @@ fn main() {
 
     let mut particles: Vec<(Point2<f64>, Vector2<f64>)> = {
         let mut rng = rand::thread_rng();
-        (0..10000).map(|_| (
+        (0..1000).map(|_| (
                 Point2::new(
                     rng.gen_range(0.0, WINDOW_SIZE[0] as f64),
                     rng.gen_range(0.0, WINDOW_SIZE[1] as f64)
@@ -43,6 +43,23 @@ fn main() {
             Input::Update(arg) => {
                 for particle in &mut particles {
                     particle.0 += particle.1 * arg.dt;
+
+                    if particle.0.x < 0.0 {
+                        particle.0.x == 0.0;
+                        particle.1.x = -particle.1.x;
+                    }
+                    if particle.0.x > WINDOW_SIZE[0] as f64 {
+                        particle.0.x == WINDOW_SIZE[0] as f64;
+                        particle.1.x = -particle.1.x;
+                    }
+                    if particle.0.y < 0.0 {
+                        particle.0.y == 0.0;
+                        particle.1.y = -particle.1.y;
+                    }
+                    if particle.0.y > WINDOW_SIZE[1] as f64 {
+                        particle.0.y == WINDOW_SIZE[1] as f64;
+                        particle.1.y = -particle.1.y;
+                    }
                 }
             }
 
