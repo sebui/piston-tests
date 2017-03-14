@@ -3,7 +3,7 @@ extern crate rand;
 extern crate nalgebra;
 
 use piston_window::*;
-use nalgebra::{Vector2, Point2,Isometry2};
+use nalgebra::{Vector2, Point2};
 use rand::Rng;
 
 const WINDOW_SIZE: [u32; 2] = [1280, 720];
@@ -20,17 +20,6 @@ fn main() {
 
     window.set_ups(60);
     window.set_max_fps(60);
-
-    let line = Line::new([0.2, 0.3, 0.6, 1.0], 1.0)
-        .shape(line::Shape::Square);
-
-    let mut max_branches = 8;
-    let mut angle = ::std::f64::consts::FRAC_PI_4;
-
-    let tree_position = (
-        WINDOW_SIZE[0] as f64 / 2.0,
-        WINDOW_SIZE[1] as f64 - 200.0
-    );
 
     let mut particles: Vec<(Point2<f64>, Vector2<f64>)> = {
         let mut rng = rand::thread_rng();
