@@ -23,7 +23,7 @@ fn main() {
 
     let mut particles: Vec<(Point2<f64>, Vector2<f64>)> = {
         let mut rng = rand::thread_rng();
-        (0..5000).map(|_| (
+        (0..10000).map(|_| (
                 Point2::new(
                     rng.gen_range(0.0, WINDOW_SIZE[0] as f64),
                     rng.gen_range(0.0, WINDOW_SIZE[1] as f64)
@@ -50,7 +50,12 @@ fn main() {
                     particle.0 += particle.1 * args.dt;
                     particle.1 *= 0.9;
 
-                    if nalgebra::distance(&particle.0, &cursor_pos) < 150.0 {
+                    //if nalgebra::distance(&particle.0, &cursor_pos) < 150.0 {
+                    if particle.0.x < cursor_pos.x + 50.0
+                        && particle.0.x > cursor_pos.x - 50.0
+                        && particle.0.y < cursor_pos.y + 50.0
+                        && particle.0.y > cursor_pos.y - 50.0
+                    {
                         particle.1 += particle.0 - cursor_pos;
                     }
 
