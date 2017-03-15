@@ -23,7 +23,7 @@ fn main() {
 
     let mut particles: Vec<(Point2<f64>, Vector2<f64>)> = {
         let mut rng = rand::thread_rng();
-        (0..1000).map(|_| (
+        (0..2000).map(|_| (
                 Point2::new(
                     rng.gen_range(0.0, WINDOW_SIZE[0] as f64),
                     rng.gen_range(0.0, WINDOW_SIZE[1] as f64)
@@ -52,41 +52,36 @@ fn main() {
 
             Input::Update(args) => {
                 lines.clear();
-                for particle in &mut particles {
-                    particle.0 += particle.1 * args.dt;
-                    particle.1 *= 0.9;
 
-                    //if nalgebra::distance(&particle.0, &cursor_pos) < 150.0 {
-                    if particle.0.x < cursor_pos.x + 50.0
-                        && particle.0.x > cursor_pos.x - 50.0
-                        && particle.0.y < cursor_pos.y + 50.0
-                        && particle.0.y > cursor_pos.y - 50.0
-                    {
-                        particle.1 += particle.0 - cursor_pos;
+                for x in 0..particles.len()  {
+                    particles[x].0 += particles[x].1 * args.dt;
+                    particles[x].1 *= 0.9;
+
+                    if nalgebra::distance(&particles[x].0, &cursor_pos) < 150.0 {
+                        particles[x].1 += particles[x].0 - cursor_pos;
                     }
 
-                    if particle.0.x < 0.0 {
-                        particle.0.x == 0.0;
-                        particle.1.x = -particle.1.x;
+                    if particles[x].0.x < 0.0 {
+                        particles[x].0.x == 0.0;
+                        particles[x].1.x = -particles[x].1.x;
                     }
-                    if particle.0.x > WINDOW_SIZE[0] as f64 {
-                        particle.0.x == WINDOW_SIZE[0] as f64;
-                        particle.1.x = -particle.1.x;
+                    if particles[x].0.x > WINDOW_SIZE[0] as f64 {
+                        particles[x].0.x == WINDOW_SIZE[0] as f64;
+                        particles[x].1.x = -particles[x].1.x;
                     }
-                    if particle.0.y < 0.0 {
-                        particle.0.y == 0.0;
-                        particle.1.y = -particle.1.y;
+                    if particles[x].0.y < 0.0 {
+                        particles[x].0.y == 0.0;
+                        particles[x].1.y = -particles[x].1.y;
                     }
-                    if particle.0.y > WINDOW_SIZE[1] as f64 {
-                        particle.0.y == WINDOW_SIZE[1] as f64;
-                        particle.1.y = -particle.1.y;
+                    if particles[x].0.y > WINDOW_SIZE[1] as f64 {
+                        particles[x].0.y == WINDOW_SIZE[1] as f64;
+                        particles[x].1.y = -particles[x].1.y;
                     }
-                }
 
-                for x in &particles  {
-                    for y in &particles {
-                        if nalgebra::distance(&x.0, &y.0) < 50.0 {
-                            lines.push((x.0.clone(), y.0.clone()));
+                    for y in 0..particles.len() {
+                        if nalgebra::distance(&particles[x].0, &particles[y].0) < 20.0 {
+                            particles[x].1 += particles[x].0 - particles[y].0;
+                            lines.push((particles[x].0.clone(), particles[y].0.clone()));
                         }
                     }
                 }
